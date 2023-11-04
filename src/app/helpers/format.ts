@@ -153,5 +153,12 @@ export function simplifyAndAssignAll(results: Result[]): UserProfile[] {
 
   return usersWithCEO
 }
+export function randomlyAssignEmployeesToManagers(
+  employees: UserProfile[]
+): UserProfile[] {
+  // Group employees by department
+  console.log("check")
+  return employees
+}
 
 const DEPARTMENTS: Department[] = ["engineering", "marketing", "product", "hr"]

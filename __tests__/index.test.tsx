@@ -335,9 +335,11 @@ test('Employees with position "Employee" should have a manager', () => {
   const duplicatedResults = duplicateResult(apiResponse.results[0], 100)
   const simplifiedAndAssignedProfiles: UserProfile[] =
     simplifyAndAssignAll(duplicatedResults)
+  console.log(simplifiedAndAssignedProfiles[10])
   const updatedDataset = randomlyAssignEmployeesToManagers(
     simplifiedAndAssignedProfiles
   )
+  console.log(updatedDataset[10].manager)
 
   // Filter employees with the position "Employee"
   const employeesWithPositionEmployee = updatedDataset.filter(
@@ -346,6 +348,6 @@ test('Employees with position "Employee" should have a manager', () => {
 
   // Check if all employees with the position "Employee" have a manager assigned
   employeesWithPositionEmployee.forEach(employee => {
-    expect(employee.manager).not.toBeNull()
+    expect(!employee.manager).toBeFalsy()
   })
 })
