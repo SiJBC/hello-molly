@@ -7,7 +7,8 @@ import {
   promoteEmployeesToDirectors,
   promoteEmployeeToCEO,
   filterByDepartment,
-  simplifyAndAssignAll
+  simplifyAndAssignAll,
+  randomlyAssignEmployeesToManagers
 } from '@/app/helpers/format'
 import { Department, Result, SimplifiedResult, UserProfile } from '@/types'
 // Mock data that the API would return
@@ -326,4 +327,25 @@ test('simplifyAndAssignAll should simplify and assign all profiles with final da
     profile => profile.position === 'CEO'
   ).length
   expect(ceoCount).toBe(1)
+})
+
+test('Employees with position "Employee" should have a manager', () => {
+  // Sample dataset
+  // Assign managers to employees
+  const duplicatedResults = duplicateResult(apiResponse.results[0], 100)
+  const simplifiedAndAssignedProfiles: UserProfile[] =
+    simplifyAndAssignAll(duplicatedResults)
+  const updatedDataset = randomlyAssignEmployeesToManagers(
+    simplifiedAndAssignedProfiles
+  )
+
+  // Filter employees with the position "Employee"
+  const employeesWithPositionEmployee = updatedDataset.filter(
+    employee => employee.position === 'Employee'
+  )
+
+  // Check if all employees with the position "Employee" have a manager assigned
+  employeesWithPositionEmployee.forEach(employee => {
+    expect(employee.manager).not.toBeNull()
+  })
 })

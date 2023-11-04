@@ -38,6 +38,7 @@ export interface SimplifiedResult {
 export interface UserProfile extends SimplifiedResult {
   position: Positions
   department: Department
+  manager?: string
 }
 
 export interface Name {
