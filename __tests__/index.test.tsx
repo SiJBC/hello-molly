@@ -8,10 +8,12 @@ import {
   promoteEmployeeToCEO,
   filterByDepartment,
   simplifyAndAssignAll,
-  randomlyAssignEmployeesToManagers
-} from '@/app/helpers/format'
+  randomlyAssignEmployeesToManagers,
+  processUserData
+} from '@/helpers/format'
 import { Result, SimplifiedResult, UserProfile } from '@/types'
 import { DEPARTMENTS } from '@/constants'
+
 // Mock data that the API would return
 
 // Mock data that the API would return
@@ -77,6 +79,11 @@ const apiResponse: { results: Result[] } = {
   ]
 }
 
+import EmployeeTree from '@/components/OrgChart' // Adjust the import path as needed
+import React from 'react'
+import { render, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
 //  a function to simulate the array of results being of length 100 to test the data formatting functions
 function duplicateResult (result: Result, times: number): Result[] {
   return new Array(times).fill(null).map(() => {
@@ -108,8 +115,7 @@ test('simplifyResult function transforms and returns the expected result', async
     uuid: result.login.uuid,
     picture: result.picture,
     name: result.name,
-    email: result.email,
-    location: result.location
+    email: result.email
   }
 
   // Assert the transformation is correct
@@ -132,7 +138,6 @@ test('assignDepartmentAndPosition function assigns the correct department and po
     picture: userProfile.picture,
     name: userProfile.name,
     email: userProfile.email,
-    location: userProfile.location,
     department: userProfile.department,
     position: 'Employee'
   }
@@ -158,7 +163,6 @@ test('simplifyAndAssignMultiple should simplify and assign multiple profiles', (
     expect(profile.picture).toEqual(apiResponse.results[0].picture)
     expect(profile.name).toEqual(apiResponse.results[0].name)
     expect(profile.email).toEqual(apiResponse.results[0].email)
-    expect(profile.location).toEqual(apiResponse.results[0].location)
     expect(profile.position).toEqual('Employee')
     expect(['Engineering', 'Marketing', 'Sales', 'HR']).toContain(
       profile.department
@@ -367,5 +371,40 @@ test('Employees with position "Employee" should have a manager and manager shoul
         .find((employee: UserProfile) => employee.position === 'Manager')
         .department
     ).toBe(employee.department)
+  })
+})
+
+describe('When user clicks on CEO in hierarchy tree all the directors are displayed', () => {
+  it('should display all directors', async () => {
+    const duplicatedResults = duplicateResult(apiResponse.results[0], 100)
+    const processedData = processUserData(duplicatedResults)
+
+    const { getByTestId, queryByTestId } = render(
+      <EmployeeTree
+        testIDS={{
+          ceoTestId: 'CEO',
+          engineeringDirectorTestId: 'Engineering-Director',
+          salesDirectorTestId: 'Sales-Director',
+          marketingDirectorTestId: 'Marketing-Director',
+          hrDirectorTestId: 'HR-Director'
+        }}
+        userData={processedData}
+      />
+    )
+
+    expect(queryByTestId('Engineering-Director')).toBeNull()
+    expect(queryByTestId('Sales-Director')).toBeNull()
+    expect(queryByTestId('Marketing-Director')).toBeNull()
+    expect(queryByTestId('HR-Director')).toBeNull()
+
+    const ceo = getByTestId('CEO')
+    userEvent.type(ceo, '{enter}')
+
+    await waitFor(() => {
+      expect(queryByTestId('Engineering-Director')).toBeTruthy()
+      expect(queryByTestId('Sales-Director')).toBeTruthy()
+      expect(queryByTestId('Marketing-Director')).toBeTruthy()
+      expect(queryByTestId('HR-Director')).toBeTruthy()
+    })
   })
 })

@@ -12,7 +12,7 @@ export default function MediaCard ({
   text?: string
 }) {
   return (
-    <div className='max-w-xs lg:max-w-xs relative after:absolute after:top-[-5%] after:right-[-5%] after:w-full after:h-full after:bg-gradient-to-l after:from-blue-200 after:to-indigo-900 after:-z-10'>
+    <div className='max-w-xs lg:max-w-xs relative after:absolute after:top-[-5%] after:right-[-5%] after:w-full after:h-1/2 after:bg-gradient-to-l after:from-blue-200 after:to-indigo-900 after:-z-10'>
       <Card>
         <Image
           alt='Random image'
