@@ -10,7 +10,8 @@ import {
   simplifyAndAssignAll,
   randomlyAssignEmployeesToManagers
 } from '@/app/helpers/format'
-import { Department, Result, SimplifiedResult, UserProfile } from '@/types'
+import { Result, SimplifiedResult, UserProfile } from '@/types'
+import { DEPARTMENTS } from '@/constants'
 // Mock data that the API would return
 
 // Mock data that the API would return
@@ -159,7 +160,7 @@ test('simplifyAndAssignMultiple should simplify and assign multiple profiles', (
     expect(profile.email).toEqual(apiResponse.results[0].email)
     expect(profile.location).toEqual(apiResponse.results[0].location)
     expect(profile.position).toEqual('Employee')
-    expect(['engineering', 'marketing', 'product', 'hr']).toContain(
+    expect(['Engineering', 'Marketing', 'Sales', 'HR']).toContain(
       profile.department
     )
   })
@@ -171,10 +172,10 @@ test('assignManagers function should assign 8 managers and 2 managers for each d
   const userProfilesWithManagers = assignManagers(simplifiedUserProfiles)
 
   const departmentCounts: { [key: string]: number } = {
-    engineering: 0,
-    marketing: 0,
-    product: 0,
-    hr: 0
+    Engineering: 0,
+    Marketing: 0,
+    Sales: 0,
+    HR: 0
   }
   let totalManagers = 0
   userProfilesWithManagers.forEach(user => {
@@ -186,10 +187,10 @@ test('assignManagers function should assign 8 managers and 2 managers for each d
 
   expect(totalManagers).toBe(8)
   // Check if there are 2 managers for each department
-  expect(departmentCounts['engineering']).toBe(2)
-  expect(departmentCounts['marketing']).toBe(2)
-  expect(departmentCounts['product']).toBe(2)
-  expect(departmentCounts['hr']).toBe(2)
+  expect(departmentCounts['Engineering']).toBe(2)
+  expect(departmentCounts['Marketing']).toBe(2)
+  expect(departmentCounts['Sales']).toBe(2)
+  expect(departmentCounts['HR']).toBe(2)
 })
 
 test('promoteEmployeesToDirector should create 4 directors one for each dataset', () => {
@@ -200,10 +201,10 @@ test('promoteEmployeesToDirector should create 4 directors one for each dataset'
   const promoted = promoteEmployeesToDirectors(userProfilesWithManagers)
 
   const departmentCounts: { [key: string]: number } = {
-    engineering: 0,
-    marketing: 0,
-    product: 0,
-    hr: 0
+    Engineering: 0,
+    Marketing: 0,
+    Sales: 0,
+    HR: 0
   }
   let totalDirectors = 0
   promoted.forEach(user => {
@@ -215,10 +216,10 @@ test('promoteEmployeesToDirector should create 4 directors one for each dataset'
 
   expect(totalDirectors).toBe(4)
   // Check if there are 1 director for each department
-  expect(departmentCounts['engineering']).toBe(1)
-  expect(departmentCounts['marketing']).toBe(1)
-  expect(departmentCounts['product']).toBe(1)
-  expect(departmentCounts['hr']).toBe(1)
+  expect(departmentCounts['Engineering']).toBe(1)
+  expect(departmentCounts['Marketing']).toBe(1)
+  expect(departmentCounts['Sales']).toBe(1)
+  expect(departmentCounts['HR']).toBe(1)
 })
 
 test('promoteEmployeeToCEO should promote an employee to CEO', () => {
@@ -259,24 +260,22 @@ test('filterByDepartment should filter the users by department', () => {
   const result = promoteEmployeeToCEO(userProfilesWithManagersAndDirectors)
 
   // Filter the result by department
-  const filteredEngineering = filterByDepartment(result, 'engineering')
-  const filteredMarketing = filterByDepartment(result, 'marketing')
-  const filteredProduct = filterByDepartment(result, 'product')
-  const filteredHR = filterByDepartment(result, 'hr')
+  const filteredEngineering = filterByDepartment(result, 'Engineering')
+  const filteredMarketing = filterByDepartment(result, 'Marketing')
+  const filteredProduct = filterByDepartment(result, 'Sales')
+  const filteredHR = filterByDepartment(result, 'HR')
 
   // Check if the filtered result has the correct length
 
   // Check if the filtered result has the correct department
   expect(
-    filteredEngineering.every(user => user.department === 'engineering')
+    filteredEngineering.every(user => user.department === 'Engineering')
   ).toBe(true)
-  expect(filteredMarketing.every(user => user.department === 'marketing')).toBe(
+  expect(filteredMarketing.every(user => user.department === 'Marketing')).toBe(
     true
   )
-  expect(filteredProduct.every(user => user.department === 'product')).toBe(
-    true
-  )
-  expect(filteredHR.every(user => user.department === 'hr')).toBe(true)
+  expect(filteredProduct.every(user => user.department === 'Sales')).toBe(true)
+  expect(filteredHR.every(user => user.department === 'HR')).toBe(true)
 })
 
 test('simplifyAndAssignAll should simplify and assign all profiles with final dataset', async () => {
@@ -295,12 +294,13 @@ test('simplifyAndAssignAll should simplify and assign all profiles with final da
   ).length
   expect(managersCount).toBe(8)
 
-  const managersCountByDepartment: Record<Department, number> = {
-    engineering: 0,
-    marketing: 0,
-    product: 0,
-    hr: 0
-  }
+  const managersCountByDepartment: Record<typeof DEPARTMENTS[number], number> =
+    {
+      Engineering: 0,
+      Marketing: 0,
+      Sales: 0,
+      HR: 0
+    }
   simplifiedAndAssignedProfiles.forEach(profile => {
     if (profile.position === 'Manager') {
       managersCountByDepartment[profile.department]++
@@ -309,12 +309,13 @@ test('simplifyAndAssignAll should simplify and assign all profiles with final da
   expect(Object.values(managersCountByDepartment)).toEqual([2, 2, 2, 2]) // 2 managers for each department
 
   // Check if there are directors for each department
-  const directorsCountByDepartment: Record<Department, number> = {
-    engineering: 0,
-    marketing: 0,
-    product: 0,
-    hr: 0
-  }
+  const directorsCountByDepartment: Record<typeof DEPARTMENTS[number], number> =
+    {
+      Engineering: 0,
+      Marketing: 0,
+      Sales: 0,
+      HR: 0
+    }
   simplifiedAndAssignedProfiles.forEach(profile => {
     if (profile.position === 'Director') {
       directorsCountByDepartment[profile.department]++
@@ -329,17 +330,24 @@ test('simplifyAndAssignAll should simplify and assign all profiles with final da
   expect(ceoCount).toBe(1)
 })
 
-test('Employees with position "Employee" should have a manager', () => {
+test('Employees with position "Employee" should have a manager and manager should be same department as employee', () => {
   // Sample dataset
   // Assign managers to employees
   const duplicatedResults = duplicateResult(apiResponse.results[0], 100)
   const simplifiedAndAssignedProfiles: UserProfile[] =
     simplifyAndAssignAll(duplicatedResults)
-  console.log(simplifiedAndAssignedProfiles[10])
   const updatedDataset = randomlyAssignEmployeesToManagers(
     simplifiedAndAssignedProfiles
   )
-  console.log(updatedDataset[10].manager)
+
+  const departmentMap = new Map()
+
+  for (const department of DEPARTMENTS) {
+    departmentMap.set(
+      department,
+      filterByDepartment(simplifiedAndAssignedProfiles, department)
+    )
+  }
 
   // Filter employees with the position "Employee"
   const employeesWithPositionEmployee = updatedDataset.filter(
@@ -349,5 +357,15 @@ test('Employees with position "Employee" should have a manager', () => {
   // Check if all employees with the position "Employee" have a manager assigned
   employeesWithPositionEmployee.forEach(employee => {
     expect(!employee.manager).toBeFalsy()
+  })
+
+  // check that the assigned manager for each employee matches their department
+  employeesWithPositionEmployee.forEach(employee => {
+    expect(
+      departmentMap
+        .get(employee.department)
+        .find((employee: UserProfile) => employee.position === 'Manager')
+        .department
+    ).toBe(employee.department)
   })
 })

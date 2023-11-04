@@ -1,3 +1,5 @@
+import { POSITIONS, DEPARTMENTS } from "../constants"
+
 export interface Root {
   results: Result[]
   info: Info
@@ -18,15 +20,6 @@ export interface Result {
   nat: string
 }
 
-export type Positions =
-  | "CEO"
-  | "Director"
-  | "Vice President"
-  | "Manager"
-  | "Employee"
-
-export type Department = "engineering" | "marketing" | "product" | "hr"
-
 export interface SimplifiedResult {
   uuid: string
   picture: Picture
@@ -36,8 +29,8 @@ export interface SimplifiedResult {
 }
 
 export interface UserProfile extends SimplifiedResult {
-  position: Positions
-  department: Department
+  position: (typeof POSITIONS)[number]
+  department: (typeof DEPARTMENTS)[number]
   manager?: string
 }
 

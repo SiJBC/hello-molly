@@ -1,11 +1,7 @@
 import _ from "lodash"
-import {
-  Result,
-  SimplifiedResult,
-  Department,
-  UserProfile,
-  Positions,
-} from "@/types"
+import { Result, SimplifiedResult, UserProfile } from "@/types"
+
+import { DEPARTMENTS, POSITIONS } from "@/constants"
 
 export function simplifyResult(result: Result): SimplifiedResult {
   return {
@@ -20,7 +16,7 @@ export function simplifyResult(result: Result): SimplifiedResult {
 export function assignDepartmentAndPosition(
   user: SimplifiedResult
 ): UserProfile {
-  const randomDepartment =
+  const randomDepartment: (typeof DEPARTMENTS)[number] =
     DEPARTMENTS[Math.floor(Math.random() * DEPARTMENTS.length)]
   return {
     ...user,
@@ -43,7 +39,7 @@ export function simplifyAndAssignMultiple(results: Result[]): UserProfile[] {
     // Assign a random department and the "Employee" position
     const userProfile: UserProfile = {
       ...simplified,
-      position: "Employee" as Positions, // Type casting to satisfy type strictness
+      position: "Employee",
       department: DEPARTMENTS[Math.floor(Math.random() * DEPARTMENTS.length)],
     }
 
@@ -53,15 +49,9 @@ export function simplifyAndAssignMultiple(results: Result[]): UserProfile[] {
 
 export function assignManagers(userProfiles: UserProfile[]): UserProfile[] {
   // Departments array
-  const departments: Department[] = [
-    "engineering",
-    "marketing",
-    "product",
-    "hr",
-  ]
 
   // Assign managers to each department
-  departments.forEach((department) => {
+  DEPARTMENTS.forEach((department) => {
     // Filter users by department
     const candidates = userProfiles.filter(
       (user) => user.department === department
@@ -82,11 +72,11 @@ export function assignManagers(userProfiles: UserProfile[]): UserProfile[] {
 export function promoteEmployeesToDirectors(
   users: UserProfile[]
 ): UserProfile[] {
-  const directorAssigned: Record<Department, boolean> = {
-    engineering: false,
-    marketing: false,
-    product: false,
-    hr: false,
+  const directorAssigned: Record<(typeof DEPARTMENTS)[number], boolean> = {
+    Engineering: false,
+    Marketing: false,
+    Sales: false,
+    HR: false,
   }
 
   for (const user of users) {
@@ -125,7 +115,7 @@ export function promoteEmployeeToCEO(users: UserProfile[]): UserProfile[] {
 
 export function filterByDepartment(
   users: UserProfile[],
-  department: Department
+  department: (typeof DEPARTMENTS)[number]
 ): UserProfile[] {
   return users.filter((user) => user.department === department)
 }
@@ -157,8 +147,27 @@ export function randomlyAssignEmployeesToManagers(
   employees: UserProfile[]
 ): UserProfile[] {
   // Group employees by department
-  console.log("check")
+
+  const departmentMap = new Map()
+
+  for (const department of DEPARTMENTS) {
+    departmentMap.set(department, filterByDepartment(employees, department))
+  }
+
+  for (const department of DEPARTMENTS) {
+    const employeesInDepartment = departmentMap.get(department)
+    const managersInDepartment = employeesInDepartment.filter(
+      (employee: UserProfile) => employee.position === "Manager"
+    )
+    const employeesWithoutManager = employeesInDepartment.filter(
+      (employee: UserProfile) => employee.position === "Employee"
+    )
+
+    for (const employee of employeesWithoutManager) {
+      const randomManager = _.sampleSize(managersInDepartment, 1)[0]
+      employee.manager = randomManager.uuid
+    }
+  }
+
   return employees
 }
-
-const DEPARTMENTS: Department[] = ["engineering", "marketing", "product", "hr"]
