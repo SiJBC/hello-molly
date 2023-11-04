@@ -15,6 +15,8 @@
     "@emotion/styled": "latest",
     "@mui/icons-material": "latest",
     "@mui/material": "latest",
+    "@mui/x-tree-view": "^6.17.0",
+    "axios": "^1.6.0",
     "lodash": "^4.17.21",
     "next": "latest",
     "react": "latest",
