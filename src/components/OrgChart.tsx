@@ -26,19 +26,14 @@ export default function ControlledTreeView ({
     hrDirectorTestId: 'HR-Director'
   }
 }: OrgChartProps) {
-  console.log('render')
   const ceoTestId = testIDS!.ceoTestId
   if (!userData) {
     throw new Error('No user data provided')
   }
-
+  const data = buildHierarchy(userData)
   const [expanded, setExpanded] = React.useState<string[]>([])
   const [selected, setSelected] = React.useState<string[]>([])
 
-  const [data, setData] = React.useState(buildHierarchy(userData))
-  if (!data) {
-    throw new Error('No data provided')
-  }
   const ceo = userData.find(user => user.position === 'CEO')
   if (!ceo) {
     throw new Error('No CEO found')
@@ -49,6 +44,13 @@ export default function ControlledTreeView ({
 
   const handleSelect = (event: React.SyntheticEvent, nodeIds: string[]) => {
     setSelected(nodeIds)
+  }
+
+  const returnDepartment = (department: string) => {
+    const director = data.root.children.find(
+      director => director.value.department === department
+    )
+    return [director, ...director!.getAncestors()].map(el => el?.value.uuid)
   }
 
   const handleExpandClick = () => {
@@ -69,10 +71,13 @@ export default function ControlledTreeView ({
     <div className='grid justify-center'>
       <Box sx={{ minHeight: 270, flexGrow: 1 }}>
         <Box sx={{ mb: 1 }}>
-          {[...DEPARTMENTS, 'ALL'].map((department, index) => (
+          {[...DEPARTMENTS, 'CLEAR'].map((department, index) => (
             <Button
               key={index}
-              onClick={() => setExpanded([department[index]])}
+              onClick={() => {
+                if (department === 'CLEAR') return setExpanded([])
+                setExpanded(returnDepartment(department) as string[])
+              }}
             >
               <div className='text-xl font-semibold'>{department}</div>
             </Button>
@@ -86,36 +91,59 @@ export default function ControlledTreeView ({
             onNodeToggle={handleToggle}
             onNodeSelect={handleSelect}
             multiSelect
+            className='bg-white'
           >
             <TreeItem
               id='ceo'
               data-testid={ceoTestId}
-              nodeId='1'
-              label={ceo.name.first + ' ' + ceo.name.last}
+              nodeId={data.root.value.uuid}
+              label={
+                data.root.value.name.first +
+                ' ' +
+                data.root.value.name.last +
+                '- CEO'
+              }
               onClick={e => console.log(e)}
             >
               <>
-                {data
-                  .get(JSON.stringify(ceo))
-                  .map((user: UserProfile, index: number) => {
-                    return (
-                      <TreeItem
-                        key={`key-${index}-${user.uuid}`}
-                        data-testid={`${user.department}-Director`}
-                        nodeId='5'
-                        label={user.name.first + ' ' + user.name.last}
-                      />
-                    )
-                  })}
+                {data.root.children.map((director, index) => {
+                  return (
+                    <TreeItem
+                      key={`key-${index}-${director.value.uuid}`}
+                      data-testid={`${director.value.department}-Director`}
+                      nodeId={director.value.uuid}
+                      label={
+                        director.value.name.first +
+                        ' ' +
+                        director.value.name.last +
+                        ` - ${director.value.department} Director`
+                      }
+                    >
+                      {director.children.map((manager, index) => (
+                        <TreeItem
+                          key={`key-${index}-${manager.value.uuid}`}
+                          data-testid={`${manager.value.department}-Manager`}
+                          nodeId={manager.value.uuid}
+                          label={`${manager.value.name.first} ${manager.value.name.last} - ${manager.value.department} Director`}
+                        >
+                          {manager.children.map(employee => (
+                            <TreeItem
+                              style={{
+                                backgroundColor: 'white'
+                              }}
+                              onClick={() => console.log('clicked')}
+                              key={`key-${employee.value.uuid}`}
+                              data-testid={`${employee.value.department}-Employee`}
+                              nodeId={employee.value.uuid}
+                              label={`${employee.value.name.first} ${employee.value.name.last} - ${employee.value.department}`}
+                            />
+                          ))}
+                        </TreeItem>
+                      ))}
+                    </TreeItem>
+                  )
+                })}
               </>
-            </TreeItem>
-            <TreeItem nodeId='5' label='Documents'>
-              <TreeItem nodeId='6' label='MUI'>
-                <TreeItem nodeId='7' label='src'>
-                  <TreeItem nodeId='8' label='index.js' />
-                  <TreeItem nodeId='9' label='tree-view.js' />
-                </TreeItem>
-              </TreeItem>
             </TreeItem>
           </TreeView>
         </Box>

@@ -13,6 +13,7 @@ import {
 } from '@/helpers/format'
 import { Result, SimplifiedResult, UserProfile } from '@/types'
 import { DEPARTMENTS } from '@/constants'
+import { Node } from '@/helpers/format'
 
 // Mock data that the API would return
 
@@ -84,12 +85,16 @@ import React from 'react'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-//  a function to simulate the array of results being of length 100 to test the data formatting functions
 function duplicateResult (result: Result, times: number): Result[] {
-  return new Array(times).fill(null).map(() => {
-    // Using JSON methods to deep clone the object to avoid referencing issues
-    return JSON.parse(JSON.stringify(result))
-  })
+  const duplicatedResults: Result[] = []
+
+  for (let i = 0; i < times; i++) {
+    const duplicatedResult: Result = JSON.parse(JSON.stringify(result))
+    duplicatedResult.login.uuid = (duplicatedResult.login.uuid as string) + i
+    duplicatedResults.push(duplicatedResult)
+  }
+
+  return duplicatedResults
 }
 
 // Mock fetch globally using jest.fn()
@@ -159,7 +164,6 @@ test('simplifyAndAssignMultiple should simplify and assign multiple profiles', (
 
   // Check if each profile has the expected properties and position
   simplifiedProfiles.forEach(profile => {
-    expect(profile.uuid).toEqual(apiResponse.results[0].login.uuid)
     expect(profile.picture).toEqual(apiResponse.results[0].picture)
     expect(profile.name).toEqual(apiResponse.results[0].name)
     expect(profile.email).toEqual(apiResponse.results[0].email)
@@ -190,7 +194,6 @@ test('assignManagers function should assign 8 managers and 2 managers for each d
   })
 
   expect(totalManagers).toBe(8)
-  // Check if there are 2 managers for each department
   expect(departmentCounts['Engineering']).toBe(2)
   expect(departmentCounts['Marketing']).toBe(2)
   expect(departmentCounts['Sales']).toBe(2)
@@ -219,7 +222,6 @@ test('promoteEmployeesToDirector should create 4 directors one for each dataset'
   })
 
   expect(totalDirectors).toBe(4)
-  // Check if there are 1 director for each department
   expect(departmentCounts['Engineering']).toBe(1)
   expect(departmentCounts['Marketing']).toBe(1)
   expect(departmentCounts['Sales']).toBe(1)
@@ -227,7 +229,6 @@ test('promoteEmployeesToDirector should create 4 directors one for each dataset'
 })
 
 test('promoteEmployeeToCEO should promote an employee to CEO', () => {
-  // Create a sample dataset with employees and managers
   const duplicatedResults = duplicateResult(apiResponse.results[0], 100)
   const simplifiedUserProfiles = simplifyAndAssignMultiple(duplicatedResults)
   const userProfilesWithManagers = assignManagers(simplifiedUserProfiles)
@@ -408,3 +409,55 @@ describe('When user clicks on CEO in hierarchy tree all the directors are displa
     })
   })
 })
+
+// describe('When user clicks on a director in hierarchy tree all the managers are displayed', () => {
+//   it('should display all managers', async () => {
+//     const duplicatedResults = duplicateResult(apiResponse.results[0], 100)
+//     const processedData = processUserData(duplicatedResults)
+
+//     const { getByTestId, queryByTestId } = render(
+//       <EmployeeTree
+//         testIDS={{
+//           ceoTestId: 'CEO',
+//           engineeringDirectorTestId: 'Engineering-Director',
+//           salesDirectorTestId: 'Sales-Director',
+//           marketingDirectorTestId: 'Marketing-Director',
+//           hrDirectorTestId: 'HR-Director'
+//         }}
+//         userData={processedData}
+//       />
+//     )
+
+//     expect(queryByTestId('Engineering-Manager')).toBeNull()
+//     expect(queryByTestId('Marketing-Manager')).toBeNull()
+//     expect(queryByTestId('Sales-Manager')).toBeNull()
+//     expect(queryByTestId('HR-Manager')).toBeNull()
+
+//     const director = getByTestId('Engineering-Director')
+//     userEvent.type(director, '{enter}')
+
+//     await waitFor(() => {
+//       expect(queryByTestId('Engineering-Manager')).toBeTruthy()
+//       expect(queryByTestId('Marketing-Manager')).toBeTruthy()
+//       expect(queryByTestId('Sales-Manager')).toBeTruthy()
+//       expect(queryByTestId('HR-Manager')).toBeTruthy()
+//     })
+//   })
+// })
+
+const userProfile: UserProfile = {
+  uuid: '123',
+  name: {
+    title: 'Mr',
+    first: 'John',
+    last: 'Doe'
+  },
+  picture: {
+    large: '',
+    thumbnail: '',
+    medium: ''
+  },
+  email: 'john.doe@example.com',
+  position: 'Manager',
+  department: 'Engineering'
+}

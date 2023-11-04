@@ -27,11 +27,6 @@ export default function Template () {
         <HeroCenter />
       </div>
       <div className='grid justify-center'>
-        <div>
-          <OrgChart
-            userData={processUserData(userQuery.data.results)}
-          ></OrgChart>
-        </div>
         <div className='flex flex-col lg:flex-row justify-center p-12 gap-12'>
           <div className='pb-12'>
             <MediaCard></MediaCard>
@@ -48,6 +43,11 @@ export default function Template () {
           <div className='pb-12'>
             <MediaCard></MediaCard>
           </div>
+        </div>
+        <div>
+          <OrgChart
+            userData={processUserData(userQuery.data.results)}
+          ></OrgChart>
         </div>
       </div>
     </>

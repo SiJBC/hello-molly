@@ -1,6 +1,6 @@
 'use client'
 import * as React from 'react'
-import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry'
+import ThemeRegistry from '@/ThemeRegistry/ThemeRegistry'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'

@@ -187,43 +187,61 @@ export function buildHierarchy(users: UserProfile[]) {
   const hierarchyTrie: Hierarchy = {
     root: new Node(ceo!),
   }
-
-  const hierarchy = new Map()
-
   const directors = users.filter((user) => user.position === "Director")
   const directorNodes = directors.map((director) => new Node(director))
+  directorNodes.map((directorNode) =>
+    directorNode.setParent(hierarchyTrie.root)
+  )
+  hierarchyTrie.root.setChildren(directorNodes)
+
   const managers = users.filter((user) => user.position === "Manager")
+
+  for (const director of directorNodes) {
+    const manager = new Node(
+      managers.find(
+        (manager) => manager.department === director.value.department
+      )!
+    )
+    manager.setParent(director)
+    director.setChildren([...director.getChildren(), manager])
+  }
   for (const department of DEPARTMENTS) {
     directorNodes
       .find((director) => director.value.department === department)
       ?.setChildren(
         managers
           .filter((manager) => manager.department === department)
-          .map((manager) => new Node(manager))
+          .map((manager) => {
+            const managerNode = new Node(manager)
+            managerNode.setParent(
+              directorNodes.find(
+                (director) => director.value.department === department
+              )!
+            )
+            return managerNode
+          })
       )
   }
-  hierarchyTrie.root.setChildren(directorNodes)
-  hierarchy.set(JSON.stringify(ceo), directors)
-  for (const director of directors) {
-    hierarchy.set(
-      JSON.stringify(director),
-      managers.filter((manager) => manager.department === director.department)
-    )
+  for (const director of directorNodes) {
+    const managerNodes = director.children
+    managerNodes.map((managerNode) => {
+      users
+        .filter((user) => user.manager === managerNode.value.uuid)
+        .map((user) => {
+          const userNode = new Node(user)
+          userNode.setParent(managerNode)
+          managerNode.setChildren([...managerNode.getChildren(), userNode])
+        })
+    })
   }
-  for (const manager of managers) {
-    hierarchy.set(
-      JSON.stringify(manager),
-      users.filter((user) => user.manager === manager.uuid)
-    )
-  }
-  return hierarchy
+  return hierarchyTrie
 }
 
-interface Hierarchy {
+export interface Hierarchy {
   root: Node
 }
 
-class Node {
+export class Node {
   constructor(
     public value: UserProfile,
     public parent: Node | null = null,
@@ -235,5 +253,18 @@ class Node {
   }
   setChildren(children: Node[]) {
     this.children = children
+  }
+  getChildren() {
+    return this.children
+  }
+  setParent(parent: Node) {
+    this.parent = parent
+  }
+  getAncestors(): Node[] {
+    if (this.parent) {
+      const ancestors = this.parent.getAncestors()
+      return [...ancestors, this.parent]
+    }
+    return []
   }
 }
