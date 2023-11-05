@@ -3,6 +3,8 @@
 import * as React from 'react'
 import BottomNavigation from '@mui/material/BottomNavigation'
 import BottomNavigationAction from '@mui/material/BottomNavigationAction'
+import { useSelector } from 'react-redux'
+import store from '@/redux/store'
 
 export default function SimpleBottomNavigation () {
   const FooterElements = [
@@ -11,11 +13,17 @@ export default function SimpleBottomNavigation () {
     'Careers',
     'Copyright'
   ]
+  const selectedTheme = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.theme
+  )
 
+  const globalStyles = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.styles
+  )
   return (
     <>
       <footer>
-        <div className='mt-72 lg:mt-0 w-screen bg-gradient-to-r from-blue-500 to-indigo-900 h-[2px] padding-0'>
+        <div className={globalStyles[selectedTheme].footerGradientBackground}>
           <div className='font-bold pt-8'>
             <BottomNavigation showLabels>
               {FooterElements.map(item => (
@@ -24,7 +32,11 @@ export default function SimpleBottomNavigation () {
             </BottomNavigation>
           </div>
         </div>
-        <div className='w-screen bg-gradient-to-l from-blue-500  h-1 after:h-2 after:absolute after:bottom-0'></div>
+        <div className='w-screen h-1 after:h-2 after:absolute after:bottom-0'>
+          <div
+            className={globalStyles[selectedTheme].footerGradientBackground}
+          ></div>
+        </div>
       </footer>
     </>
   )

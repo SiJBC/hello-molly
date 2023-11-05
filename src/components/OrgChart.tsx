@@ -40,6 +40,12 @@ export default function ControlledTreeView ({
   const data = buildHierarchy(userData)
   const [expanded, setExpanded] = React.useState<string[]>([])
   const [selected, setSelected] = React.useState<string[]>([])
+  const selectedTheme = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.theme
+  )
+  const globalStyles = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.styles
+  )
 
   const ceo = userData.find(user => user.position === 'CEO')
   if (!ceo) {
@@ -69,22 +75,41 @@ export default function ControlledTreeView ({
     return [director, ...director!.getAncestors()].map(el => el?.value.uuid)
   }
 
+  const colors = {
+    Default: globalStyles['Default'].color,
+    Engineering: globalStyles['Engineering'].color,
+    Sales: globalStyles['Sales'].color,
+    Marketing: globalStyles['Marketing'].color,
+    HR: globalStyles['HR'].color
+  }
+
   return (
     <div className='grid justify-center lg:pb-8 xl:pb-14 2xl:pb-32'>
       <div className='m-auto'>
         <Box sx={{ minHeight: 270, flexGrow: 1 }}>
           <Box sx={{ mb: 1 }}>
             <div className='pb-28 text-center'>
-              {[...DEPARTMENTS, 'CLEAR'].map((department, index) => (
+              {[...DEPARTMENTS, 'Default'].map((department, index) => (
                 <Button
                   key={index}
                   onClick={() => {
-                    if (department === 'CLEAR') return setExpanded([])
+                    if (department === 'Default') {
+                      setExpanded([])
+                      store.dispatch(setTheme('Default'))
+                      return
+                    }
                     setExpanded(returnDepartment(department) as string[])
                     store.dispatch(setTheme(department))
                   }}
                 >
-                  <div className='text-xl font-semibold'>{department}</div>
+                  <div
+                    style={{
+                      color: colors[department as keyof typeof colors]
+                    }}
+                    className='text-xl font-semibold'
+                  >
+                    {department}
+                  </div>
                 </Button>
               ))}
             </div>

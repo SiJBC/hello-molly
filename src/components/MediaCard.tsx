@@ -3,6 +3,8 @@ import Image from 'next/image'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
+import { useSelector } from 'react-redux'
+import store from '@/redux/store'
 
 export default function MediaCard ({
   title = 'CEO',
@@ -15,9 +17,16 @@ export default function MediaCard ({
   src?: string
   email?: string
 }) {
+  const selectedTheme = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.theme
+  )
+
+  const globalStyles = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.styles
+  )
   return (
     <div>
-      <div className='max-w-xs lg:max-w-xs relative after:absolute after:top-[-5%] after:right-[-5%] after:w-full after:h-1/2 after:bg-gradient-to-l after:from-blue-200 after:to-indigo-900 after:-z-10 h-60 w-80'>
+      <div className={globalStyles[selectedTheme].mediaCardBackground}>
         <Card>
           <div className='flex flex-col justify-center'>
             <div className='m-auto'>
