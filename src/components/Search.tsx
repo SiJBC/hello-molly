@@ -1,35 +1,57 @@
+'use client'
+
+import * as React from 'react'
 import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
-import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { UserProfile } from '@/types'
+import { setUser } from '@/redux/slices'
+import store from '@/redux/store'
 
-interface SearchProps {
-  options: string[]
+type SearchProps = {
+  options?: {
+    label: string
+    uuid: string
+  }[]
 }
 
-const Search: React.FC<SearchProps> = ({ options }) => {
-  const [value, setValue] = useState<string | null>(options[0] || null)
-  const [inputValue, setInputValue] = useState('')
+export default function ComboBox () {
+  const users = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data
+  )
+
+  const options = React.useMemo(() => {
+    if (users) {
+      return users.data.map((user: UserProfile) => ({
+        label: `${user.name.first}  ${user.name.last}`,
+        department: user.department,
+        uuid: user.uuid
+      }))
+    } else {
+      return []
+    }
+  }, [users])
 
   return (
-    <div>
-      <div>{`value: ${value !== null ? `'${value}'` : 'null'}`}</div>
-      <div>{`inputValue: '${inputValue}'`}</div>
-      <br />
-      <Autocomplete
-        value={value}
-        onChange={(event: any, newValue: string | null) => {
-          setValue(newValue)
-        }}
-        inputValue={inputValue}
-        onInputChange={(event, newInputValue) => {
-          setInputValue(newInputValue)
-        }}
-        options={options}
-        sx={{ width: 300 }}
-        renderInput={params => <TextField {...params} label='Controllable' />}
-      />
-    </div>
+    <Autocomplete
+      disablePortal
+      options={options ?? []}
+      onChange={(event, newValue) => {
+        store.dispatch(
+          setUser(
+            users.data.find(user => user.uuid === newValue?.uuid) as UserProfile
+          )
+        )
+      }}
+      sx={{ width: 300 }}
+      renderOption={(props, option) => {
+        return (
+          <li {...props} key={option.uuid}>
+            {option.label}
+          </li>
+        )
+      }}
+      renderInput={params => <TextField {...params} label='Search' />}
+    />
   )
 }
-
-export default Search

@@ -10,6 +10,9 @@ import { TreeView } from '@mui/x-tree-view/TreeView'
 import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import { UserProfile } from '@/types'
 import { buildHierarchy } from '@/helpers/format'
+import { useEffect } from 'react'
+import store from '@/redux/store'
+import { useSelector } from 'react-redux'
 
 type OrgChartProps = {
   userData: UserProfile[]
@@ -26,6 +29,9 @@ export default function ControlledTreeView ({
     hrDirectorTestId: 'HR-Director'
   }
 }: OrgChartProps) {
+  const selectedUser = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.user
+  )
   const ceoTestId = testIDS!.ceoTestId
   if (!userData) {
     throw new Error('No user data provided')
@@ -38,6 +44,15 @@ export default function ControlledTreeView ({
   if (!ceo) {
     throw new Error('No CEO found')
   }
+
+  useEffect(() => {
+    const selectedUserNode = data.root.search(
+      (selectedUser as UserProfile).uuid
+    )
+    setExpanded(selectedUserNode?.getAncestors().map(el => el.value.uuid) ?? [])
+    setSelected([selectedUserNode?.value.uuid ?? ''])
+  }, [selectedUser])
+
   const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
     setExpanded(nodeIds)
   }
@@ -68,7 +83,7 @@ export default function ControlledTreeView ({
   }
 
   return (
-    <div className='grid justify-center'>
+    <div className='grid justify-center lg:pb-8 xl:pb-14 2xl:pb-32'>
       <Box sx={{ minHeight: 270, flexGrow: 1 }}>
         <Box sx={{ mb: 1 }}>
           {[...DEPARTMENTS, 'CLEAR'].map((department, index) => (
@@ -103,7 +118,6 @@ export default function ControlledTreeView ({
                 data.root.value.name.last +
                 '- CEO'
               }
-              onClick={e => console.log(e)}
             >
               <>
                 {data.root.children.map((director, index) => {
@@ -124,7 +138,7 @@ export default function ControlledTreeView ({
                           key={`key-${index}-${manager.value.uuid}`}
                           data-testid={`${manager.value.department}-Manager`}
                           nodeId={manager.value.uuid}
-                          label={`${manager.value.name.first} ${manager.value.name.last} - ${manager.value.department} Director`}
+                          label={`${manager.value.name.first} ${manager.value.name.last} - ${manager.value.department} Manager`}
                         >
                           {manager.children.map(employee => (
                             <TreeItem

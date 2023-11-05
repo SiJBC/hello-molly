@@ -1,13 +1,14 @@
 'use client'
 import HeroCenter from '@/components/Hero'
-import MediaCard from '@/components/MediaCard'
 import OrgChart from '@/components/OrgChart'
-import { useState } from 'react'
+import Search from '@/components/Search'
 import { useQuery } from '@tanstack/react-query'
-import { UserProfile } from '@/types'
 import { processUserData } from '@/helpers/format'
+import { useDispatch } from 'react-redux'
+import { setData } from '@/redux/slices'
 
 export default function Template () {
+  const dispatch = useDispatch()
   const userQuery = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
@@ -20,14 +21,14 @@ export default function Template () {
 
   if (userQuery.isLoading) return <div className='h-screen'>Loading...</div>
   if (userQuery.isError) return <div className='h-screen'>Error...</div>
-
+  dispatch(setData(processUserData(userQuery.data.results)))
   return (
     <>
       <div className='lg:p-8 xl:p-14 2xl:p-32'>
-        <HeroCenter />
+        <HeroCenter search={<Search />} />
       </div>
       <div className='grid justify-center'>
-        <div className='flex flex-col lg:flex-row justify-center p-12 gap-12'>
+        {/* <div className='flex flex-col lg:flex-row justify-center p-12 gap-12'>
           <div className='pb-12'>
             <MediaCard></MediaCard>
           </div>
@@ -43,7 +44,7 @@ export default function Template () {
           <div className='pb-12'>
             <MediaCard></MediaCard>
           </div>
-        </div>
+        </div> */}
         <div>
           <OrgChart
             userData={processUserData(userQuery.data.results)}

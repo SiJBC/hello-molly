@@ -1,10 +1,12 @@
 'use client'
 
 import * as React from 'react'
-import { Box } from '@mui/material'
-import Image from 'next/image'
 
-export default function HeroCenter () {
+type HeroCenterProps = {
+  search: React.ReactNode
+}
+
+export default function HeroCenter ({ search }: HeroCenterProps) {
   return (
     <header>
       <div
@@ -27,7 +29,7 @@ export default function HeroCenter () {
                   className='inline-block w-full md:w-auto mb-4 md:mr-6 py-5 px-8 text-sm font-bold uppercase border-2 border-transparent bg-gray-200 rounded hover:bg-gray-100 text-gray-800 transition duration-200'
                   href='#'
                 >
-                  start your free trial
+                  {search}
                 </a>
               </div>
             </div>

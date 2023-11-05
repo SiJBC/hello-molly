@@ -267,4 +267,16 @@ export class Node {
     }
     return []
   }
+  search(value: string): Node | null {
+    if (this.value.uuid === value) {
+      return this
+    }
+    for (const child of this.children) {
+      const result = child.search(value)
+      if (result) {
+        return result
+      }
+    }
+    return null
+  }
 }

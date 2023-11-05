@@ -1,13 +1,10 @@
 'use client'
 
 import * as React from 'react'
-import Box from '@mui/material/Box'
 import BottomNavigation from '@mui/material/BottomNavigation'
 import BottomNavigationAction from '@mui/material/BottomNavigationAction'
 
 export default function SimpleBottomNavigation () {
-  const [value, setValue] = React.useState(0)
-
   const FooterElements = [
     'Privacy Policy',
     'Terms of Service',
@@ -17,20 +14,18 @@ export default function SimpleBottomNavigation () {
 
   return (
     <>
-      <div className='w-screen bg-gradient-to-r from-blue-500 to-indigo-900 h-1 after:h-32 after:absolute after:-top-10'></div>
-      <div className='w-screen bg-gradient-to-r from-blue-500 to-indigo-900 h-16 after:h-32 after:absolute after:-top-10'>
-        <BottomNavigation
-          showLabels
-          value={value}
-          onChange={(_, newValue) => {
-            setValue(newValue)
-          }}
-        >
-          {FooterElements.map(item => (
-            <BottomNavigationAction key={item} label={item} />
-          ))}
-        </BottomNavigation>
-      </div>
+      <footer>
+        <div className='w-screen bg-gradient-to-r from-blue-500 to-indigo-900 h-[2px] padding-0'>
+          <div className='font-bold pt-8'>
+            <BottomNavigation showLabels>
+              {FooterElements.map(item => (
+                <BottomNavigationAction key={item} label={item} />
+              ))}
+            </BottomNavigation>
+          </div>
+        </div>
+        <div className='w-screen bg-gradient-to-l from-blue-500  h-1 after:h-2 after:absolute after:bottom-0'></div>
+      </footer>
     </>
   )
 }
