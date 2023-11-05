@@ -83,6 +83,44 @@ A custom trie component was implemented for efficient searching and sorting:
 - **Search Efficiency**: Test cases were designed to measure the performance and accuracy of the search functionality provided by the trie component.
 - **Hierarchical Mapping**: Tests ensured that the trie data structure correctly mapped data into hierarchical levels suitable for DOM representation.
 
+## Evaluation Criteria
+
+### Code Organization, Structure, and Readability
+
+- The codebase is organized into clearly defined components, constants, and helpers.
+- Redux is used for managing the application state, with separate slices for data, user selection, and theming.
+
+### Proper Use of React.js/Next.js and Material UI
+
+- React.js (or Next.js) is utilized effectively to build a dynamic and performant UI.
+- Material UI components are integrated for a consistent UI design and Tailwind UI is used for small CSS adjustments and assisting with layouts.
+
+### Accuracy in Rendering the Organizational Hierarchy
+
+- The organizational hierarchy is accurately rendered based on the layers within the tree and the reporting structure of employees.
+- A tree data structure is employed to manage and display the hierarchical data.
+
+### User Interface Design and Usability
+
+- The interface is designed to be intuitive and user-friendly.
+- Components are modular and reusable, ensuring a consistent look and feel.
+
+### Responsiveness for Different Screen Sizes
+
+- The application is responsive and provides a seamless experience on devices as small as an iPhone SE.
+- Media queries and responsive design techniques are used to maintain usability across devices. Tailwind adopts a mobile first approach to styling.
+
+### Handling of Edge Cases and Error Scenarios
+
+- Edge cases are handled gracefully, ensuring the application remains stable and functional.
+- TypeScript is used to add an additional layer of reliability to catch errors at compile time.
+- Fallback data is provided via a static JSON file in case of network issues.
+
+### Overall User Experience
+
+- The application provides an engaging and accessible user experience.
+- Feedback is provided to users through loading states, errors are handled with fallback data, and confirmations as needed based User selections.
+
 ## Testing
 
 I have implemented a suite of tests to ensure the integrity and functionality of our application's user data processing. These tests can be found in `__tests__/index.test.tsx` and cover the following areas:
