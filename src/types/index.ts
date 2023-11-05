@@ -25,6 +25,7 @@ export interface SimplifiedResult {
   picture: Picture
   name: Name
   email: string
+  location?: Location
 }
 
 export interface UserProfile extends SimplifiedResult {

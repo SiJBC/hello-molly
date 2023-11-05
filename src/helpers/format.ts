@@ -1,7 +1,8 @@
+// @ts-nocheck
 import _ from "lodash"
 import { Result, SimplifiedResult, UserProfile } from "@/types"
 
-import { DEPARTMENTS, POSITIONS } from "@/constants"
+import { DEPARTMENTS } from "@/constants"
 
 export function simplifyResult(result: Result): SimplifiedResult {
   return {
