@@ -13,7 +13,8 @@ import {
 } from '@/helpers/format'
 import { Result, SimplifiedResult, UserProfile } from '@/types'
 import { DEPARTMENTS } from '@/constants'
-import { Node } from '@/helpers/format'
+import { Provider } from 'react-redux'
+import store from '@/redux/store'
 
 // Mock data that the API would return
 
@@ -381,16 +382,18 @@ describe('When user clicks on CEO in hierarchy tree all the directors are displa
     const processedData = processUserData(duplicatedResults)
 
     const { getByTestId, queryByTestId } = render(
-      <EmployeeTree
-        testIDS={{
-          ceoTestId: 'CEO',
-          engineeringDirectorTestId: 'Engineering-Director',
-          salesDirectorTestId: 'Sales-Director',
-          marketingDirectorTestId: 'Marketing-Director',
-          hrDirectorTestId: 'HR-Director'
-        }}
-        userData={processedData}
-      />
+      <Provider store={store}>
+        <EmployeeTree
+          testIDS={{
+            ceoTestId: 'CEO',
+            engineeringDirectorTestId: 'Engineering-Director',
+            salesDirectorTestId: 'Sales-Director',
+            marketingDirectorTestId: 'Marketing-Director',
+            hrDirectorTestId: 'HR-Director'
+          }}
+          userData={processedData}
+        />
+      </Provider>
     )
 
     expect(queryByTestId('Engineering-Director')).toBeNull()
