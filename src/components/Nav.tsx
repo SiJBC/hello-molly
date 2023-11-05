@@ -15,12 +15,10 @@ import MenuIcon from '@mui/icons-material/Menu'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import { useSelector } from 'react-redux'
+import store from '@/redux/store'
 
 interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
   window?: () => Window
 }
 
@@ -29,17 +27,21 @@ const navItems = ['Home', 'About Us', 'Services', 'Contact Us', 'Blog']
 
 export default function DrawerAppBar (props: Props) {
   const { window } = props
+
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
+  const selectedTheme = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.theme
+  )
+  const globalStyles = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.styles
+  )
   const handleDrawerToggle = () => {
     setMobileOpen(prevState => !prevState)
   }
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant='h6' sx={{ my: 2 }}>
-        Refresh Data
-      </Typography>
       <Divider />
       <List>
         {navItems.map(item => (
@@ -59,7 +61,7 @@ export default function DrawerAppBar (props: Props) {
   return (
     <>
       <AppBar color='transparent' position='sticky' component='nav'>
-        <div className='bg-gradient-to-r from-blue-500 to-indigo-900'>
+        <div className={globalStyles[selectedTheme].backgroundGradientClass}>
           <Toolbar>
             <IconButton
               color='inherit'
@@ -70,13 +72,6 @@ export default function DrawerAppBar (props: Props) {
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              variant='h6'
-              component='div'
-              sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-            >
-              Refresh Data
-            </Typography>
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
               {navItems.map(item => (
                 <Button key={item} sx={{ color: '#fff' }}>

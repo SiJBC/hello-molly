@@ -1,18 +1,28 @@
 'use client'
 
 import * as React from 'react'
+import { useSelector } from 'react-redux'
+import store from '@/redux/store'
 
 type HeroCenterProps = {
   search: React.ReactNode
 }
 
 export default function HeroCenter ({ search }: HeroCenterProps) {
+  const selectedTheme = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.theme
+  )
+
+  const globalStyles = useSelector(
+    (state: ReturnType<typeof store.getState>) => state.data.styles
+  )
+
   return (
     <header>
       <div
         className='w-full bg-center bg-cover '
         style={{
-          backgroundImage: 'url(/img_hero_blue.png)'
+          backgroundImage: globalStyles[selectedTheme].backgroundImageUrl
         }}
       >
         <div className='flex items-center justify-center w-full h-full bg-gray-900 bg-opacity-50 py-12'>
@@ -22,7 +32,7 @@ export default function HeroCenter ({ search }: HeroCenterProps) {
                 <span className='text-gray-200 font-semibold uppercase tracking-widest'>
                   Explore The Organization Hierarchy
                 </span>
-                <h2 className='mt-8 mb-6 text-4xl lg:text-5xl font-bold text-gray-100'>
+                <h2 className='mt-8 mb-6 text-xl md:text-3xl lg:text-5xl font-bold text-gray-100'>
                   Find Your Next Talent
                 </h2>
                 <a

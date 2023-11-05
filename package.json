@@ -13,6 +13,7 @@
     "@emotion/cache": "latest",
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
+    "@mui/base": "5.0.0-beta.22",
     "@mui/icons-material": "latest",
     "@mui/material": "latest",
     "@mui/x-tree-view": "^6.17.0",

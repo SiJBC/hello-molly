@@ -15,7 +15,7 @@ export default function SimpleBottomNavigation () {
   return (
     <>
       <footer>
-        <div className='w-screen bg-gradient-to-r from-blue-500 to-indigo-900 h-[2px] padding-0'>
+        <div className='mt-72 lg:mt-0 w-screen bg-gradient-to-r from-blue-500 to-indigo-900 h-[2px] padding-0'>
           <div className='font-bold pt-8'>
             <BottomNavigation showLabels>
               {FooterElements.map(item => (

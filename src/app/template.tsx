@@ -6,6 +6,10 @@ import { useQuery } from '@tanstack/react-query'
 import { processUserData } from '@/helpers/format'
 import { useDispatch } from 'react-redux'
 import { setData } from '@/redux/slices'
+import Fade from '@mui/material/Fade'
+import staticData from '@/data.json'
+import Spinner from '@/components/Spinner'
+import Directors from '@/components/Directors'
 
 export default function Template () {
   const dispatch = useDispatch()
@@ -19,37 +23,28 @@ export default function Template () {
     }
   })
 
-  if (userQuery.isLoading) return <div className='h-screen'>Loading...</div>
-  if (userQuery.isError) return <div className='h-screen'>Error...</div>
-  dispatch(setData(processUserData(userQuery.data.results)))
+  if (userQuery.isLoading)
+    return (
+      <div className='h-screen grid justify-center items-center'>
+        <Spinner />
+      </div>
+    )
+  const data = userQuery.error ? staticData : userQuery.data
+  dispatch(setData(processUserData(data.results)))
   return (
     <>
       <div className='lg:p-8 xl:p-14 2xl:p-32'>
-        <HeroCenter search={<Search />} />
+        <Fade appear={true} in={true} timeout={500}>
+          <div>
+            <HeroCenter search={<Search />} />
+          </div>
+        </Fade>
+      </div>
+      <div className='m-auto'>
+        <OrgChart userData={processUserData(data.results)}></OrgChart>
       </div>
       <div className='grid justify-center'>
-        {/* <div className='flex flex-col lg:flex-row justify-center p-12 gap-12'>
-          <div className='pb-12'>
-            <MediaCard></MediaCard>
-          </div>
-          <div className='pb-12'>
-            <MediaCard></MediaCard>
-          </div>
-          <div className='pb-12 -translate-y-12'>
-            <MediaCard></MediaCard>
-          </div>
-          <div className='pb-12'>
-            <MediaCard></MediaCard>
-          </div>
-          <div className='pb-12'>
-            <MediaCard></MediaCard>
-          </div>
-        </div> */}
-        <div>
-          <OrgChart
-            userData={processUserData(userQuery.data.results)}
-          ></OrgChart>
-        </div>
+        <Directors data={processUserData(data.results)} />
       </div>
     </>
   )
